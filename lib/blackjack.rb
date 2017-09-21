@@ -43,7 +43,7 @@ class Game
 
   def lets_play
     puts "------------------------------------------------"
-    puts "Let's Play! You wager $10."
+    puts "   ♦ ♣ ♠ ♥ Let's Play! You wager $10. ♦ ♣ ♠ ♥   "
     puts "------------------------------------------------"
     deal_cards
   end
@@ -127,12 +127,12 @@ class Game
     dealer_value
     puts "Your cards are:"
     @player_hand.each do |card|
-      puts "[#{card.rank}]"
+      puts "[#{card.suit}#{card.rank}]"
     end
     puts "For a total of: #{@player_value}"
     puts "------------------------------------------------"
     puts "Dealer Shows:"
-    puts "[#{@dealer_hand[1].rank}][ ]"
+    puts "[#{@dealer_hand[1].suit}#{@dealer_hand[1].rank}][ ]"
     player_blackjack?
     dealer_blackjack?
     player_bust?
@@ -161,7 +161,7 @@ class Game
   def play_dealer_hand
     puts "Dealer Cards:"
     @dealer_hand.each do |card|
-      p "[#{card.rank}]"
+      p "[#{card.suit}#{card.rank}]"
     end
     puts "Dealer has #{@dealer_value}"
     puts "------------------------------------------------"
@@ -181,7 +181,7 @@ class Game
     if @player_blackjack && !@dealer_blackjack
       @purse += 15
 
-      puts "BLACKJACK!!"
+      puts "       ♦ ♣ ♠ ♥   BLACKJACK!!   ♦ ♣ ♠ ♥        "
       puts "You win $15 and now have $#{@purse} in total."
       puts "------------------------------------------------"
       start_game
