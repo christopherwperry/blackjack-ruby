@@ -4,7 +4,6 @@ require_relative 'deck'
 class Game
 
   def initialize
-    $deck = Deck.new
     @purse = 100
     @wager = 10
     greeting
@@ -21,6 +20,7 @@ class Game
   end
 
   def start_game
+    $deck = Deck.new
     @player_hand = []
     @dealer_hand = []
     @player_blackjack = false
@@ -37,7 +37,7 @@ class Game
       puts "You cash out with $#{@purse}. Come back soon!"
     else
       puts "Not a valid input, please try again"
-      play_again?
+      play_or_go?
     end
   end
 
@@ -66,32 +66,51 @@ class Game
 
   def player_value
     @player_value = 0
-    @player_ace = 0
+    @player_aces = 0
     @player_hand.each do |card|
       if card.rank == "J" || card.rank == "Q" || card.rank == "K"
         @player_value += 10
       elsif card.rank == "A"
-        @player_ace += 1
+        @player_aces += 1
       else
         @player_value += card.rank.to_i
       end
     end
-    ace_value(@player_value, @player_ace)
+    if @player_aces == 1 and @player_value < 11
+      @player_value += 11
+    elsif @player_aces == 1 and @player_value > 10
+      @player_value += 1
+    elsif @player_aces == 2 and @player_value < 10
+      @player_value += 12
+    elsif @player_aces == 2 and @player_value > 9
+      @player_value += 2
+    end
+    @player_value
   end
 
   def dealer_value
     @dealer_value = 0
-    @dealer_ace = 0
+    @dealer_aces = 0
     @dealer_hand.each do |card|
       if card.rank == "J" || card.rank == "Q" || card.rank == "K"
         @dealer_value += 10
       elsif card.rank == "A"
-        @dealer_ace += 1
+        @dealer_aces += 1
       else
         @dealer_value += card.rank.to_i
       end
     end
-    ace_value(@dealer_value, @dealer_ace)
+    if @dealer_aces == 1 and @dealer_value < 11
+      @dealer_value += 11
+    elsif @dealer_aces == 1 and @dealer_value > 10
+      @dealer_value += 1
+    elsif @dealer_aces == 2 and @dealer_value < 10
+      @dealer_value += 12
+    elsif @dealer_aces == 2 and @dealer_value > 9
+      @dealer_value += 2
+    else
+      @dealer_value
+    end
   end
 
   def player_bust?
@@ -103,45 +122,20 @@ class Game
     end
   end
 
-  # def ace_count(cards)
-  #   puts "running ace_count"
-  #   @aces_count = 0
-  #   cards.each do |card|
-  #     if card.rank == "A"
-  #       @aces_count +=1
-  #     end
-  #   end
-  # end
-
-  def ace_value(cards_value, aces)
-    puts "running ace_value"
-    puts cards_value
-    puts aces
-    if aces == 1 and cards_value < 11
-      cards_value += 11
-    elsif aces == 1 and cards_value > 10
-      cards_value += 1
-    elsif aces == 2 and cards_value < 10
-      cards_value += 12
-    elsif aces == 2 and cards_value > 9
-      cards_value += 2
-    end
-    puts cards_value
-    cards_value
-  end
-
   def read_cards
+    player_value
+    dealer_value
     puts "Your cards are:"
     @player_hand.each do |card|
       puts "[#{card.rank}]"
     end
-    player_blackjack?
     puts "For a total of: #{@player_value}"
     puts "------------------------------------------------"
-    player_bust?
     puts "Dealer Shows:"
     puts "[#{@dealer_hand[1].rank}][ ]"
+    player_blackjack?
     dealer_blackjack?
+    player_bust?
     hit_or_stand
   end
 
@@ -152,7 +146,6 @@ class Game
     if @answer == "h"
       puts "One card incoming!"
       @player_hand.push($cards.shift)
-      player_value
       read_cards
     elsif @answer == "s"
       puts "You have chosen to stand at #{@player_value}."
@@ -166,7 +159,6 @@ class Game
   end
 
   def play_dealer_hand
-    dealer_value
     puts "Dealer Cards:"
     @dealer_hand.each do |card|
       p "[#{card.rank}]"
@@ -186,10 +178,15 @@ class Game
   end
 
   def player_blackjack?
-    if @player_blackjack
+    if @player_blackjack && !@dealer_blackjack
       @purse += 15
+
       puts "BLACKJACK!!"
       puts "You win $15 and now have $#{@purse} in total."
+      puts "------------------------------------------------"
+      start_game
+    elsif @player_blackjack && @dealer_blackjack
+      puts "It's a push. Both sides have BLACKJACK!!"
       puts "------------------------------------------------"
       start_game
     end
