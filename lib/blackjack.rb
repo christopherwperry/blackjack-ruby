@@ -21,14 +21,8 @@ class Game
   end
 
   def start_game
-    clear_game
-  end
-
-  def clear_game
     @player_hand = []
     @dealer_hand = []
-    @player_face_card = false
-    @dealer_face_card = false
     @player_blackjack = false
     @dealer_blackjack = false
     play_or_go?
@@ -72,31 +66,32 @@ class Game
 
   def player_value
     @player_value = 0
+    @player_ace = 0
     @player_hand.each do |card|
       if card.rank == "J" || card.rank == "Q" || card.rank == "K"
-        @player_face_card = true
         @player_value += 10
-      elsif card.rank != "A"
-        @player_value += card.rank.to_i
+      elsif card.rank == "A"
+        @player_ace += 1
       else
-        resolve_ace(@player_hand)
+        @player_value += card.rank.to_i
       end
     end
-    player_bust?
+    ace_value(@player_value, @player_ace)
   end
 
   def dealer_value
     @dealer_value = 0
+    @dealer_ace = 0
     @dealer_hand.each do |card|
       if card.rank == "J" || card.rank == "Q" || card.rank == "K"
-        @dealer_face_card = true
         @dealer_value += 10
-      elsif card.rank != "A"
-        @dealer_value += card.rank.to_i
+      elsif card.rank == "A"
+        @dealer_ace += 1
       else
-        resolve_ace(@dealer_hand)
+        @dealer_value += card.rank.to_i
       end
     end
+    ace_value(@dealer_value, @dealer_ace)
   end
 
   def player_bust?
@@ -108,11 +103,31 @@ class Game
     end
   end
 
-  def resolve_ace(cards)
-    cards.each do |card|
-      puts "There's an ace in #{cards} hand."
-      puts "[#{card.rank}]"
+  # def ace_count(cards)
+  #   puts "running ace_count"
+  #   @aces_count = 0
+  #   cards.each do |card|
+  #     if card.rank == "A"
+  #       @aces_count +=1
+  #     end
+  #   end
+  # end
+
+  def ace_value(cards_value, aces)
+    puts "running ace_value"
+    puts cards_value
+    puts aces
+    if aces == 1 and cards_value < 11
+      cards_value += 11
+    elsif aces == 1 and cards_value > 10
+      cards_value += 1
+    elsif aces == 2 and cards_value < 10
+      cards_value += 12
+    elsif aces == 2 and cards_value > 9
+      cards_value += 2
     end
+    puts cards_value
+    cards_value
   end
 
   def read_cards
@@ -123,8 +138,10 @@ class Game
     player_blackjack?
     puts "For a total of: #{@player_value}"
     puts "------------------------------------------------"
+    player_bust?
     puts "Dealer Shows:"
     puts "[#{@dealer_hand[1].rank}][ ]"
+    dealer_blackjack?
     hit_or_stand
   end
 
@@ -149,17 +166,17 @@ class Game
   end
 
   def play_dealer_hand
+    dealer_value
     puts "Dealer Cards:"
     @dealer_hand.each do |card|
       p "[#{card.rank}]"
     end
-    dealer_blackjack?
     puts "Dealer has #{@dealer_value}"
     puts "------------------------------------------------"
     if @dealer_value < 17
       @dealer_hand.push($cards.shift)
-      dealer_value
       puts "Dealer hits."
+      dealer_value
       play_dealer_hand
     elsif @dealer_value > 21
       dealer_bust
@@ -199,7 +216,7 @@ class Game
     if @player_value > @dealer_value
       @purse += 10
       puts "Your #{@player_value} beats the dealer's #{@dealer_value}."
-      puts "You win $10 and now have $#{purse} in your stack."
+      puts "You win $10 and now have $#{@purse} in your stack."
       puts "------------------------------------------------"
       start_game
     elsif @player_value < @dealer_value
