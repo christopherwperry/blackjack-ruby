@@ -182,11 +182,11 @@ class Game
       @purse += 15
 
       puts "       ♦ ♣ ♠ ♥   BLACKJACK!!   ♦ ♣ ♠ ♥        "
-      puts "You win $15 and now have $#{@purse} in total."
+      puts " You win $15 and now have $#{@purse} in total."
       puts "------------------------------------------------"
       start_game
     elsif @player_blackjack && @dealer_blackjack
-      puts "It's a push. Both sides have BLACKJACK!!"
+      puts "    It's a push. Both sides have BLACKJACK!!"
       puts "------------------------------------------------"
       start_game
     end
@@ -195,8 +195,8 @@ class Game
   def dealer_blackjack?
     if @dealer_blackjack
       @purse -= 10
-      puts "Dealer has blackjack..."
-      puts "You lose $10 and now have $#{@purse} in total."
+      puts "          ...Dealer has blackjack...          "
+      puts "   You lose $10 and now have $#{@purse} in total."
       puts "------------------------------------------------"
       start_game
     end
@@ -204,7 +204,7 @@ class Game
 
   def dealer_bust
     @purse += 10
-    puts "Dealer busts. You win $10. You now have $#{@purse}."
+    puts "Dealer busts! You win $10. You now have $#{@purse}."
     puts "------------------------------------------------"
     start_game
   end
