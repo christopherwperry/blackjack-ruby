@@ -1,9 +1,7 @@
 class Player
 
-  def initialize(name)
-    @name = name
+  def initialize
     @purse = 100
-    @hand = []
   end
 
 end
