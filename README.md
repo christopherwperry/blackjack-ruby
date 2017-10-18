@@ -24,7 +24,6 @@ irb(main):003:0> name.chomp
 .chomp removes a final newline from a string if there is one. You will need this when getting input from users. One more example, this time of a function that handles getting a yes or no from a user:
 
 def get_yes_or_no
-  # loop until you get a good answer and return
   while true
     print "Please enter (y)es or (n)o: "
     answer = gets.chomp.downcase
@@ -80,4 +79,3 @@ The dealer stands. The dealer has a total of 19. You win!
 You have $90 and bet $10.
 ...
 Starter files have been provided in the 'starter_files' folder. There is only a set of directories, a Rakefile, and a blackjack.rb file which should be run to start your game. No tests are provided, but you should write tests to help you along the way.
-
